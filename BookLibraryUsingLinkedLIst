@@ -1,0 +1,98 @@
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+class Book;
+class BookLibrary{
+    Book *book;
+    BookLibrary *nextBook;
+    public:
+    BookLibrary(Book* in_book):book(in_book),nextBook(nullptr)
+    {
+        
+    }
+    
+    void setNextBook(BookLibrary *in_bookNext)
+    {
+        nextBook = in_bookNext;
+    }
+    
+    BookLibrary* getNextBook()
+    {
+        return nextBook;
+    }
+    
+    Book* getCurrentBook()
+    {
+        return book;
+    }
+};
+
+class Book{
+    int id;
+    string title;
+    BookLibrary* bookLibrary;
+    public:
+    Book(int in_id=0, string in_title=""):id(in_id),title(in_title),bookLibrary(nullptr)
+    {
+        
+    }
+    
+    bool IsBookIdAvailable(int in_id)
+    {
+        BookLibrary* temp = bookLibrary;
+        while(temp!=nullptr)
+        {
+            Book* book = temp->getCurrentBook();
+            if(in_id == book->id)
+                return true;
+            temp = temp->getNextBook();
+        }
+        return false;
+    }
+    
+    void AddBook(int in_id,string in_title)
+    {
+        id = in_id;
+        title = in_title;
+        if(!IsBookIdAvailable(id)){
+        
+            BookLibrary* newBookEntry = new BookLibrary(new Book(id,title));
+            
+            if(!bookLibrary)
+                bookLibrary = newBookEntry;
+            else{
+                BookLibrary* temp = bookLibrary;
+                while (temp->getNextBook() != nullptr)
+                {
+                    temp=temp->getNextBook();
+                }
+                temp->setNextBook(newBookEntry);
+            }
+        }
+    }
+    
+    void printAllBooks()
+    {
+        BookLibrary* temp = bookLibrary;
+        while(temp!=nullptr)
+        {
+            Book* currentBook = temp->getCurrentBook();
+            cout<<currentBook->id<<" "<<currentBook->title<<endl;
+            temp=temp->getNextBook();
+        }
+    }
+};
+
+int main()
+{
+    Book b1;
+    b1.AddBook(1,"C++");
+    b1.AddBook(1,"Java");
+    b1.AddBook(3,"Python");
+    
+    b1.printAllBooks();
+
+    return 0;
+}
